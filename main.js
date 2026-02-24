@@ -38,6 +38,12 @@ console.log('#58. JavaScript homework example file');
  *
  */
 
+import path from 'path';
+import { createGzip, createGunzip } from 'zlib';
+import { createReadStream, createWriteStream } from 'fs';
+import { pipeline } from 'stream/promises';
+import { access } from 'fs/promises';
+
 async function compressFile(filePath) {
   if (!filePath || typeof filePath !== 'string') {
     throw new Error('Invalid file path')
@@ -55,7 +61,7 @@ async function compressFile(filePath) {
 while (true) {
   try {
     await access(outputPath)
-    outputPath = path.join(dir, `${name}(${counter}).gz`)
+    outputPath = path.join(dir, `${name}(${counter})${ext}.gz`)
     counter++ 
   } catch (error) {
     break
@@ -115,7 +121,7 @@ async function decompressFile(compressedFilePath, destinationFilePath) {
     throw new Error('Invalid destination file path')
   }
 
-  if (!destinaionFilePath || typeof destinationFilePath !== 'string') {
+  if (!destinationFilePath || typeof destinationFilePath !== 'string') {
     throw new Error('Invalid destination file path')
   }
 
@@ -153,16 +159,16 @@ while (true) {
 
 
 // ! Перевірка роботи функцій стиснення та розпакування файлів
-// async function performCompressionAndDecompression() {
-//   try {
-//     const compressedResult = await compressFile('./files/source.txt')
-//     console.log(compressedResult)
-//     const decompressedResult = await decompressFile(compressedResult, './files/source_decompressed.txt')
-//     console.log(decompressedResult)
-//   } catch (error) {
-//     console.error('Error during compression or decompression:', error)
-//   }
-// }
-// performCompressionAndDecompression()
+async function performCompressionAndDecompression() {
+  try {
+    const compressedResult = await compressFile('./files/source.txt')
+    console.log(compressedResult)
+    const decompressedResult = await decompressFile(compressedResult, './files/source_decompressed.txt')
+    console.log(decompressedResult)
+  } catch (error) {
+    console.error('Error during compression or decompression:', error)
+  }
+}
+performCompressionAndDecompression()
 
 export { compressFile, decompressFile };
